@@ -58,6 +58,8 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint16_t size;
+uint8_t Data[256];
 /* USER CODE END 0 */
 
 /**
@@ -106,9 +108,11 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	 float temp = max30102_readtemp(&max30102);
-	 log_console.msg_len = sprintf((char *)log_console.msg,"Temperature: %0.2f C \r\n", temp);
-	 erlog_write(&log_console);
+	  float temp = max30102_readtemp(&max30102);
+	 size = sprintf((char *)Data,"Temperature: %0.2f C \r\n", temp);
+	 HAL_UART_Transmit(&huart3, Data, size, 1000);
+
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
