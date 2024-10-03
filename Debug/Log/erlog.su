@@ -1,0 +1,4 @@
+../Log/erlog.c:5:13:uart_error_handler	4	static,ignoring_inline_asm
+../Log/erlog.c:12:13:uart_init	16	static
+../Log/erlog.c:42:6:erlog_init	16	static
+../Log/erlog.c:50:6:erlog_write	16	static
