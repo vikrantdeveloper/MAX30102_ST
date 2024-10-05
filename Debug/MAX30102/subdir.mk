@@ -5,12 +5,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../MAX30102/heartRate.c \
 ../MAX30102/max30102.c 
 
 OBJS += \
+./MAX30102/heartRate.o \
 ./MAX30102/max30102.o 
 
 C_DEPS += \
+./MAX30102/heartRate.d \
 ./MAX30102/max30102.d 
 
 
@@ -21,7 +24,7 @@ MAX30102/%.o MAX30102/%.su MAX30102/%.cyclo: ../MAX30102/%.c MAX30102/subdir.mk
 clean: clean-MAX30102
 
 clean-MAX30102:
-	-$(RM) ./MAX30102/max30102.cyclo ./MAX30102/max30102.d ./MAX30102/max30102.o ./MAX30102/max30102.su
+	-$(RM) ./MAX30102/heartRate.cyclo ./MAX30102/heartRate.d ./MAX30102/heartRate.o ./MAX30102/heartRate.su ./MAX30102/max30102.cyclo ./MAX30102/max30102.d ./MAX30102/max30102.o ./MAX30102/max30102.su
 
 .PHONY: clean-MAX30102
 

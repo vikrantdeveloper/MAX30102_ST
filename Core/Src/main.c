@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 UART_HandleTypeDef huart3;
@@ -29,7 +28,7 @@ I2C_HandleTypeDef hi2c2;
 /* USER CODE BEGIN PTD */
 #include "erlog.h"
 #include "max30102.h"
-#include "stdio.h"
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,8 +57,9 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t size;
-uint8_t Data[256];
+const uint8_t avgAmount = 64;
+long baseValue = 0;
+int ir_values = 0;
 /* USER CODE END 0 */
 
 /**
@@ -86,20 +86,41 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   erlog_init(&log_console, &huart3);
   max30102_init(&max30102 , &hi2c2);
-  read_register(&max30102, MAX30102_REVISIONID , &max30102.revision_id);  // read revision id
-  read_register(&max30102, MAX30102_PARTID , &max30102.part_id); // read part id to verify.
+  /* USER CODE END SysInit */
 
-  max30102_enableDIETEMPRDY(&max30102);
-  HAL_Delay(1);
 
   /* USER CODE BEGIN 2 */
+
+  read_register(&max30102, MAX30102_REVISIONID , &max30102.revision_id);
+  read_register(&max30102, MAX30102_PARTID , &max30102.part_id);
+  log_console.msg_len = sprintf((char *)log_console.msg,"MAX30102 Revision_id: %x, Part_id: %x\r\n", max30102.revision_id, max30102.part_id);
+  erlog_write(&log_console);
+  erlog_clear(&log_console);
+
+  max30102_clear_fifo(&max30102);
+  max30102_softReset(&max30102);
+  max30102_set_fifoaverage(&max30102 , max30102_smp_ave_4);
+  max30102_enableFIFORollover(&max30102);
+
+
+
+  max30102_setpulsewidth(&max30102 , max30102_pw_18_bit);
+  max30102_setadcrange(&max30102, max30102_adc_4096);
+  max30102_setsamplerate(&max30102, max30102_sr_400);
+  max30102_setledmode(&max30102 , max30102_led_irg);
+  max30102_set_pulseamplitude(&max30102, 0x1F, RED_COLOUR);   // configure heartbeat sensor colours
+  max30102_set_pulseamplitude(&max30102, 0x1F, GREEN_COLOUR);
+  max30102_set_pulseamplitude(&max30102, 0x1F, IR);
+  max30102_set_pulseamplitude(&max30102, 0x1F, PROXIMITY);
+
+  max30102_enableSlot(&max30102 , 3, SLOT_GREEN_LED);
+  max30102_set_pulseamplitude(&max30102, 0x0A, RED_COLOUR);   // configure heartbeat sensor colours
+  max30102_set_pulseamplitude(&max30102, 0x00, GREEN_COLOUR);
+  max30102_enableDIETEMPRDY(&max30102);
+  HAL_Delay(1);
 
   /* USER CODE END 2 */
 
@@ -107,15 +128,43 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-	  float temp = max30102_readtemp(&max30102);
-	 size = sprintf((char *)Data,"Temperature: %0.2f C \r\n", temp);
-	 HAL_UART_Transmit(&huart3, Data, size, 1000);
 
+	 /*measure temperature values*/
+	 float temp = max30102_readtemp(&max30102);
+	 log_console.msg_len= sprintf((char *)log_console.msg,"Temp :- %0.2f C \r\n", temp);
+	 erlog_write(&log_console);
+	 HAL_Delay(100);
+	 erlog_clear(&log_console);
+     HAL_Delay(100);
+
+     /*measure heartrate & spo2 values*/
+	 ir_values = max30102_safeCheck(&max30102);
+	 if(ir_values > 50000)
+	 {
+		 processHeartBeat(&max30102);
+		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f spo2 - %f\r\n", beatsPerMinute, spo2Avg);
+
+	 }
+	 else
+	 {
+		 beatsPerMinute = 0;
+		 beatAvg = 0;
+		 strcpy(log_console.msg , "No finger detected \r\n");
+		 log_console.msg_len = strlen(log_console.msg);
+	 }
+	 erlog_write(&log_console);
+	 HAL_Delay(100);
+	 erlog_clear(&log_console);
+
+//	 if(checkForBeat(ir_values) == true)
+//	 {
+//		 processHeartBeat();
+//	 }
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+  /* USER CODE END WHILE */
 }
 
 /**

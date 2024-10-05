@@ -2,3 +2,4 @@
 ../Log/erlog.c:12:13:uart_init	2
 ../Log/erlog.c:42:6:erlog_init	1
 ../Log/erlog.c:50:6:erlog_write	1
+../Log/erlog.c:54:6:erlog_clear	1

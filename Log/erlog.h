@@ -15,4 +15,6 @@ void erlog_init(log_t *log_console, UART_HandleTypeDef *huart3);
 
 void erlog_write(log_t *log_console);
 
+void erlog_clear(log_t *log_console);
+
 #endif
