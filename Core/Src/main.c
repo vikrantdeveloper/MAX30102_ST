@@ -57,9 +57,10 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-const uint8_t avgAmount = 64;
-long baseValue = 0;
-int ir_values = 0;
+
+float temp , spo2 = 0;
+float beatsPerMinute = 0;
+float beatAvg = 0;
 /* USER CODE END 0 */
 
 /**
@@ -70,7 +71,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  int ir_values = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -128,7 +129,7 @@ int main(void)
   {
 
 	 /*measure temperature values*/
-	 float temp = max30102_readtemp(&max30102);
+	 temp = max30102_readtemp(&max30102);
 	 log_console.msg_len= sprintf((char *)log_console.msg,"Temp :- %0.2f C \r\n", temp);
 	 erlog_write(&log_console);
 	 HAL_Delay(100);
@@ -140,7 +141,8 @@ int main(void)
 	 if(ir_values > 50000)
 	 {
 		 checkbeat(ir_values);
-		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f\r\n", beatsPerMinute);
+		 Spo2AvgInit(&max30102);
+		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f , spo2 - %f\r\n", beatsPerMinute, spo2);
 
 	 }
 	 else
@@ -156,11 +158,6 @@ int main(void)
 	 erlog_write(&log_console);
 	 HAL_Delay(100);
 	 erlog_clear(&log_console);
-
-//	 if(checkForBeat(ir_values) == true)
-//	 {
-//		 processHeartBeat();
-//	 }
 
     /* USER CODE BEGIN 3 */
   }

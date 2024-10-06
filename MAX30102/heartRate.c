@@ -3,14 +3,11 @@
 
 #include "filters.h"
 
-
-
 uint32_t lastBeat = 0;  // Time of the last detected beat in milliseconds
 uint32_t delta = 0;     // Time difference between beats
 uint8_t rateSpot = 0;   // Index for storing BPM readings
 uint8_t rates[RATE_SIZE];  // Array to store BPM values
-float beatsPerMinute = 0;
-float beatAvg = 0;
+
 
 void processHeartBeat(float current_diff)
 {

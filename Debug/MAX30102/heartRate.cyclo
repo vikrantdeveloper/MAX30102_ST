@@ -1,2 +1,2 @@
-../MAX30102/heartRate.c:15:6:processHeartBeat	5
-../MAX30102/heartRate.c:40:6:checkbeat	2
+../MAX30102/heartRate.c:12:6:processHeartBeat	5
+../MAX30102/heartRate.c:37:6:checkbeat	2

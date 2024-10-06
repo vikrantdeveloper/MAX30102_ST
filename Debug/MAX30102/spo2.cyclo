@@ -1,6 +1,7 @@
-../MAX30102/spo2.c:13:6:maxim_heart_rate_and_oxygen_saturation	3
-../MAX30102/spo2.c:34:6:maxim_find_peaks	1
-../MAX30102/spo2.c:41:6:maxim_peaks_above_min_height	8
-../MAX30102/spo2.c:64:6:maxim_remove_close_peaks	6
-../MAX30102/spo2.c:85:6:maxim_sort_ascend	4
-../MAX30102/spo2.c:96:6:maxim_sort_indices_descend	4
+../MAX30102/spo2.c:22:6:initStatistic	1
+../MAX30102/spo2.c:30:6:Spo2AvgProcess	2
+../MAX30102/spo2.c:47:7:average	2
+../MAX30102/spo2.c:53:7:minimum	1
+../MAX30102/spo2.c:58:7:maximum	1
+../MAX30102/spo2.c:64:6:initMinMaxAvgStatistic	1
+../MAX30102/spo2.c:71:6:Spo2AvgInit	1
