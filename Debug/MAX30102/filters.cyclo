@@ -1,0 +1,15 @@
+../MAX30102/filters.c:8:6:HighPassFilter_init	1
+../MAX30102/filters.c:17:6:HighPassFilter_init_with_cutoff	1
+../MAX30102/filters.c:21:7:HighPassFilter_process	1
+../MAX30102/filters.c:32:6:HighPassFilter_reset	1
+../MAX30102/filters.c:38:6:LowPassFilter_init	1
+../MAX30102/filters.c:45:6:LowPassFilter_init_with_cutoff	1
+../MAX30102/filters.c:49:7:LowPassFilter_process	2
+../MAX30102/filters.c:58:6:LowPassFilter_reset	1
+../MAX30102/filters.c:63:6:Differentiator_init	1
+../MAX30102/filters.c:68:7:Differentiator_process	1
+../MAX30102/filters.c:74:6:Differentiator_reset	1
+../MAX30102/filters.c:79:6:MovingAverageFilter_init	2
+../MAX30102/filters.c:87:7:MovingAverageFilter_process	3
+../MAX30102/filters.c:100:6:MovingAverageFilter_reset	1
+../MAX30102/filters.c:105:5:MovingAverageFilter_count	1

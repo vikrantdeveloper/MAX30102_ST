@@ -105,8 +105,6 @@ int main(void)
   max30102_set_fifoaverage(&max30102 , max30102_smp_ave_4);
   max30102_enableFIFORollover(&max30102);
 
-
-
   max30102_setpulsewidth(&max30102 , max30102_pw_18_bit);
   max30102_setadcrange(&max30102, max30102_adc_4096);
   max30102_setsamplerate(&max30102, max30102_sr_400);
@@ -141,12 +139,15 @@ int main(void)
 	 ir_values = max30102_safeCheck(&max30102);
 	 if(ir_values > 50000)
 	 {
-		 processHeartBeat(&max30102);
-		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f spo2 - %f\r\n", beatsPerMinute, spo2Avg);
+		 checkbeat(ir_values);
+		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f\r\n", beatsPerMinute);
 
 	 }
 	 else
 	 {
+
+		 HighPassFilter_reset(&high_pass_filter);
+		 LowPassFilter_reset(&low_pass_filter);
 		 beatsPerMinute = 0;
 		 beatAvg = 0;
 		 strcpy(log_console.msg , "No finger detected \r\n");

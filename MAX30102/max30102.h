@@ -6,8 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include "stm32f7xx_hal.h"
 #include "heartRate.h"
+#include "filters.h"
 
 /*
  * MODE CONFIGURATION MACROS

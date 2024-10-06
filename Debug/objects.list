@@ -24,5 +24,7 @@
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart.o"
 "./Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.o"
 "./Log/erlog.o"
+"./MAX30102/filters.o"
 "./MAX30102/heartRate.o"
 "./MAX30102/max30102.o"
+"./MAX30102/spo2.o"

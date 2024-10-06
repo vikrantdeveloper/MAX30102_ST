@@ -27,7 +27,7 @@ MAX30102/max30102.o: ../MAX30102/max30102.c \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h \
- ../MAX30102/max30102.h ../MAX30102/heartRate.h \
+ ../MAX30102/max30102.h ../MAX30102/heartRate.h ../MAX30102/filters.h \
  /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/L7_ass2/Log/erlog.h
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h:
 ../Core/Inc/stm32f7xx_hal_conf.h:
@@ -59,4 +59,5 @@ MAX30102/max30102.o: ../MAX30102/max30102.c \
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h:
 ../MAX30102/max30102.h:
 ../MAX30102/heartRate.h:
+../MAX30102/filters.h:
 /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/L7_ass2/Log/erlog.h:
