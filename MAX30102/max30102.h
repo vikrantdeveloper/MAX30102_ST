@@ -288,6 +288,7 @@ uint32_t max30102_checksamples(max30102_t *obj);
 uint32_t max30102_safeCheck(max30102_t *obj);
 void max30102_softReset(max30102_t *obj);
 
+void EXTI_Init(max30102_t *obj);
 
 
 

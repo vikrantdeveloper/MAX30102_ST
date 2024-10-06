@@ -7,6 +7,8 @@ uint8_t dataBuffer[32];
 uint8_t readPointer = 0;
 uint8_t writePointer = 0;
 
+extern float temp;
+
 static void i2c_error_Handler(void)
 {
   __disable_irq();
@@ -358,6 +360,17 @@ uint32_t max30102_safeCheck(max30102_t *obj)
         HAL_Delay(1);  // Delay for 1 millisecond
     }
 }
+
+/*
+ * Temperature Interrupts
+ */
+void EXTI_Init(max30102_t *obj)
+{
+
+    HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 1);  // Set priority (lower number means higher priority)
+    HAL_NVIC_EnableIRQ(EXTI0_IRQn);          // Enable EXTI line 0 interrupt
+}
+
 
 
 
