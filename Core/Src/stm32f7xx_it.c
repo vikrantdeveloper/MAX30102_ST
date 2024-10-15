@@ -226,6 +226,13 @@ void I2C2_ER_IRQHandler(void)
   /* USER CODE END I2C2_ER_IRQn 1 */
 }
 
+/*
+ * added a callback function for the interrupt line to handle
+ */
 /* USER CODE BEGIN 1 */
+void EXTI0_IRQHandler(void)
+{
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);  // Call the HAL handler to manage the interrupt
+}
 
 /* USER CODE END 1 */

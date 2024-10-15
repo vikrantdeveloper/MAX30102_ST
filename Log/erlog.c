@@ -51,3 +51,7 @@ void erlog_write(log_t *log_console)
 {
 	HAL_UART_Transmit(log_console->uhart, (uint8_t *)log_console->msg, log_console->msg_len, HAL_MAX_DELAY);
 }
+void erlog_clear(log_t *log_console)
+{
+	memset(log_console->msg , 0, sizeof(log_console->msg_len));
+}

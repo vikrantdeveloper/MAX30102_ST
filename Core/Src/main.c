@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 UART_HandleTypeDef huart3;
@@ -29,7 +28,7 @@ I2C_HandleTypeDef hi2c2;
 /* USER CODE BEGIN PTD */
 #include "erlog.h"
 #include "max30102.h"
-#include "stdio.h"
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,12 +51,26 @@ max30102_t max30102;   /*MAX30102 object*/
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+float temp , spo2 = 0;
+float beatsPerMinute = 0;
+float beatAvg = 0;
+
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == GPIO_PIN_0)
+    {
+    	temp = max30102_readtemp(&max30102);
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -68,7 +81,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  int ir_values = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -84,20 +97,42 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   erlog_init(&log_console, &huart3);
   max30102_init(&max30102 , &hi2c2);
-  read_register(&max30102, MAX30102_REVISIONID , &max30102.revision_id);  // read revision id
-  read_register(&max30102, MAX30102_PARTID , &max30102.part_id); // read part id to verify.
 
-  max30102_enableDIETEMPRDY(&max30102);
-  HAL_Delay(1);
+  /* USER CODE END SysInit */
+
 
   /* USER CODE BEGIN 2 */
+
+  read_register(&max30102, MAX30102_REVISIONID , &max30102.revision_id);
+  read_register(&max30102, MAX30102_PARTID , &max30102.part_id);
+  log_console.msg_len = sprintf((char *)log_console.msg,"MAX30102 Revision_id: %x, Part_id: %x\r\n", max30102.revision_id, max30102.part_id);
+  erlog_write(&log_console);
+  erlog_clear(&log_console);
+
+
+  max30102_clear_fifo(&max30102);
+  max30102_softReset(&max30102);
+  max30102_set_fifoaverage(&max30102 , max30102_smp_ave_4);
+  max30102_enableFIFORollover(&max30102);
+
+  max30102_setpulsewidth(&max30102 , max30102_pw_18_bit);
+  max30102_setadcrange(&max30102, max30102_adc_4096);
+  max30102_setsamplerate(&max30102, max30102_sr_400);
+  max30102_setledmode(&max30102 , max30102_led_irg);
+  max30102_set_pulseamplitude(&max30102, 0x1F, RED_COLOUR);   // configure heartbeat sensor colours
+  max30102_set_pulseamplitude(&max30102, 0x1F, GREEN_COLOUR);
+  max30102_set_pulseamplitude(&max30102, 0x1F, IR);
+  max30102_set_pulseamplitude(&max30102, 0x1F, PROXIMITY);
+
+  max30102_enableSlot(&max30102 , 3, SLOT_GREEN_LED);
+  max30102_set_pulseamplitude(&max30102, 0x0A, RED_COLOUR);   // configure heartbeat sensor colours
+  max30102_set_pulseamplitude(&max30102, 0x00, GREEN_COLOUR);
+  EXTI_Init(&max30102);
+  max30102_enableDIETEMPRDY(&max30102);
+  HAL_Delay(1);
 
   /* USER CODE END 2 */
 
@@ -105,13 +140,43 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-	 float temp = max30102_readtemp(&max30102);
-	 log_console.msg_len = sprintf((char *)log_console.msg,"Temperature: %0.2f C \r\n", temp);
+
+	 /*measure temperature values*/
+	 temp = max30102_readtemp(&max30102);
+	 log_console.msg_len= sprintf((char *)log_console.msg,"Temp :- %0.2f C \r\n", temp);
+	 temp = 0;
 	 erlog_write(&log_console);
+	 HAL_Delay(100);
+	 erlog_clear(&log_console);
+     HAL_Delay(100);
+
+     /*measure heartrate & spo2 values*/
+	 ir_values = max30102_safeCheck(&max30102);
+	 if(ir_values > 50000)
+	 {
+		 checkbeat(ir_values);
+		 Spo2AvgInit(&max30102);
+		 log_console.msg_len= sprintf((char *)log_console.msg,"Finger Detected , Heartbeat:- %f , spo2 - %f\r\n", beatsPerMinute, spo2);
+
+	 }
+	 else
+	 {
+
+		 HighPassFilter_reset(&high_pass_filter);
+		 LowPassFilter_reset(&low_pass_filter);
+		 beatsPerMinute = 0;
+		 beatAvg = 0;
+		 strcpy(log_console.msg , "No finger detected \r\n");
+		 log_console.msg_len = strlen(log_console.msg);
+	 }
+	 erlog_write(&log_console);
+	 HAL_Delay(100);
+	 erlog_clear(&log_console);
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+  /* USER CODE END WHILE */
 }
 
 /**
@@ -228,6 +293,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_VBUS_GPIO_Port, &GPIO_InitStruct);
+
+
+ // Configure external line interrupt
+ // Configure PA0 as input with no pull-up, no pull-down
+ GPIO_InitStruct.Pin = GPIO_PIN_0;
+ GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;  // Interrupt on falling edge
+ GPIO_InitStruct.Pull = GPIO_PULLUP;
+ HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
