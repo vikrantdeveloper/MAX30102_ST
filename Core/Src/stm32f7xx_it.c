@@ -55,9 +55,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern I2C_HandleTypeDef hi2c2;
-/* USER CODE BEGIN EV */
 
+/* USER CODE BEGIN EV */
+extern I2C_HandleTypeDef hi2c2;
 /* USER CODE END EV */
 
 /******************************************************************************/

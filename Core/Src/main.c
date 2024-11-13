@@ -138,6 +138,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  /* USER CODE BEGIN 3 */
   while (1)
   {
 
@@ -172,8 +173,6 @@ int main(void)
 	 erlog_write(&log_console);
 	 HAL_Delay(100);
 	 erlog_clear(&log_console);
-
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
   /* USER CODE END WHILE */
