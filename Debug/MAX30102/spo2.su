@@ -1,0 +1,7 @@
+../MAX30102/spo2.c:22:6:initStatistic	16	static
+../MAX30102/spo2.c:30:6:Spo2AvgProcess	16	static
+../MAX30102/spo2.c:47:7:average	16	static
+../MAX30102/spo2.c:53:7:minimum	16	static
+../MAX30102/spo2.c:58:7:maximum	16	static
+../MAX30102/spo2.c:64:6:initMinMaxAvgStatistic	16	static
+../MAX30102/spo2.c:71:6:Spo2AvgInit	56	static

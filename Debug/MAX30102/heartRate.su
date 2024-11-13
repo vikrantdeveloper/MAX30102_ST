@@ -1,0 +1,2 @@
+../MAX30102/heartRate.c:12:6:processHeartBeat	32	static
+../MAX30102/heartRate.c:37:6:checkbeat	40	static
