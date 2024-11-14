@@ -16,17 +16,14 @@ This project interfaces with the MAX30102 heart rate and SpO2 sensor using an ST
 - **STM32CubeMX/IDE** (for configuration and development)
 - **SD card module** (for future integration)
 
-## Installation
-Clone the repository to your local machine:
-```bash
-git clone git@github.com:vikrantdeveloper/MAX30102_ST.git
 
 ## Branches
-- **main branch: Multi-tasking with FreeRTOS, SD card logging (pending due to mounting issues).
+- **main branch: Multi-tasking with FreeRTOS , sensing and UART logging data.
 
-- **develop branch: Single while loop without FreeRTOS, UART logging.
+- **develop branch: Single while loop with sensing and  UART logging.
 
 ##Folder Structure
+
 /src: Core code files (sensor, SD card, UART).
 /FreeRTOS: FreeRTOS config and task management.
 /inc: Header files for sensors and peripherals.
@@ -38,6 +35,6 @@ Sensor Task: Continuously acquires data from MAX30102.
 Logging Task: Logs data to SD card (UART used for now).
 Semaphore: Synchronizes tasks.
 
-Conclusion
+## Conclusion
 main branch: FreeRTOS multi-tasking, UART logging, SD card (pending).
 develop branch: Single loop, no FreeRTOS, UART logging.
