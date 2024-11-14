@@ -21,10 +21,12 @@ Clone the repository to your local machine:
 ```bash
 git clone git@github.com:vikrantdeveloper/MAX30102_ST.git
 
-Branches
-main branch: Multi-tasking with FreeRTOS, SD card logging (pending due to mounting issues).
-develop branch: Single while loop without FreeRTOS, UART logging.
-Folder Structure
+## Branches
+- **main branch: Multi-tasking with FreeRTOS, SD card logging (pending due to mounting issues).
+
+- **develop branch: Single while loop without FreeRTOS, UART logging.
+
+##Folder Structure
 /src: Core code files (sensor, SD card, UART).
 /FreeRTOS: FreeRTOS config and task management.
 /inc: Header files for sensors and peripherals.
@@ -35,9 +37,7 @@ Task Overview (Main Branch)
 Sensor Task: Continuously acquires data from MAX30102.
 Logging Task: Logs data to SD card (UART used for now).
 Semaphore: Synchronizes tasks.
-Troubleshooting SD Card Issues
-Ensure the SD card is formatted to FAT32.
-Verify wiring and power to the SD card module.
+
 Conclusion
 main branch: FreeRTOS multi-tasking, UART logging, SD card (pending).
 develop branch: Single loop, no FreeRTOS, UART logging.
