@@ -18,22 +18,23 @@ This project interfaces with the MAX30102 heart rate and SpO2 sensor using an ST
 
 
 ## Branches
-- main branch: Multi-tasking with FreeRTOS , sensing and UART logging data.
+- main branch: Multi-tasking with FreeRTOS , sensing and UART logging data.(Assignment 4 & 5)
 
-- develop branch: Single while loop with sensing and  UART logging.
+- develop branch: Single while loop with sensing and  UART logging.(Assignment 1, 2, 3)
 
 ## Folder Structure
 
-/src: Core code files (sensor, SD card, UART).
-/FreeRTOS: FreeRTOS config and task management.
-/inc: Header files for sensors and peripherals.
-/drivers: Low-level hardware drivers.
-/max30102: Sensor data processing (filters, heart rate, SpO2).
-/logs: Console logging via UART.
+- /src: Core code files (sensor, SD card, UART).
+- /FreeRTOS: FreeRTOS config and task management.
+- /inc: Header files for sensors and peripherals.
+- /drivers: Low-level hardware drivers.
+- /max30102: Sensor data processing (filters, heart rate, SpO2).
+- /logs: Console logging via UART.
+
 Task Overview (Main Branch)
-Sensor Task: Continuously acquires data from MAX30102.
-Logging Task: Logs data to SD card (UART used for now).
-Semaphore: Synchronizes tasks.
+- Sensor Task: Continuously acquires data from MAX30102.
+- Logging Task: Logs data to SD card (UART used for now).
+- Semaphore: Synchronizes tasks.
 
 ## Conclusion
 main branch: FreeRTOS multi-tasking, UART logging, SD card (pending).
