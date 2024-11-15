@@ -18,7 +18,7 @@ This project interfaces with the MAX30102 heart rate and SpO2 sensor using an ST
 
 
 ## Branches
-- main branch: Multi-tasking with FreeRTOS and synchronisation, sensing and SD card data. (Assignment 5)
+- main branch: Multi-tasking with FreeRTOS and synchronisation, sensing and UART and sd card logging. (Assignment 5)
 
 - develop branch: Single while loop with sensing, UART logging and sd card write.(Assignment 1, 2, 3, 4)
 
