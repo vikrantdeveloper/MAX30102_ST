@@ -367,7 +367,7 @@ uint32_t max30102_safeCheck(max30102_t *obj)
 void EXTI_Init(max30102_t *obj)
 {
 
-    HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 1);  // Set priority (lower number means higher priority)
+    HAL_NVIC_SetPriority(EXTI0_IRQn, 2, 2);  // Set priority (lower number means higher priority)
     HAL_NVIC_EnableIRQ(EXTI0_IRQn);          // Enable EXTI line 0 interrupt
 }
 

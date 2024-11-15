@@ -55,7 +55,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern I2C_HandleTypeDef hi2c2;
 /* USER CODE BEGIN EV */
 extern I2C_HandleTypeDef hi2c2;
 /* USER CODE END EV */
@@ -226,9 +226,6 @@ void I2C2_ER_IRQHandler(void)
   /* USER CODE END I2C2_ER_IRQn 1 */
 }
 
-/*
- * added a callback function for the interrupt line to handle
- */
 /* USER CODE BEGIN 1 */
 void EXTI0_IRQHandler(void)
 {

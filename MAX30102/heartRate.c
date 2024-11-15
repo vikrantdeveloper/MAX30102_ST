@@ -16,7 +16,7 @@ void processHeartBeat(float current_diff)
     delta = currentMillis - lastBeat;  // Calculate the time difference between current and last beat
     lastBeat = currentMillis;          // Update the time of the last beat
 
-    beatsPerMinute = (60.0 / (delta / 1000.0)) - 100.0;  // Calculate beats per minute
+    beatsPerMinute = (60.0 / (delta / 1000.0));  // Calculate beats per minute
 
     // Filter valid BPM values
     if (beatsPerMinute < 255 && beatsPerMinute > 20 && current_diff < kEdgeThreshold)

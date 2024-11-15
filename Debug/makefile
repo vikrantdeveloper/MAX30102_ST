@@ -9,8 +9,12 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Middlewares/Third_Party/FatFs/src/option/subdir.mk
+-include Middlewares/Third_Party/FatFs/src/subdir.mk
 -include MAX30102/subdir.mk
 -include Log/subdir.mk
+-include FATFS/Target/subdir.mk
+-include FATFS/App/subdir.mk
 -include Drivers/STM32F7xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
@@ -36,34 +40,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := MAX3012_F7
+BUILD_ARTIFACT_NAME := L7_sdcard
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-MAX3012_F7.elf \
+L7_sdcard.elf \
 
 MAP_FILES += \
-MAX3012_F7.map \
+L7_sdcard.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-MAX3012_F7.list \
+L7_sdcard.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: MAX3012_F7.elf secondary-outputs
+main-build: L7_sdcard.elf secondary-outputs
 
 # Tool invocations
-MAX3012_F7.elf MAX3012_F7.map: $(OBJS) $(USER_OBJS) /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/L7_ass2/STM32F722ZETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "MAX3012_F7.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced Embedded/Assignment/L7_ass2/STM32F722ZETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MAX3012_F7.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+L7_sdcard.elf L7_sdcard.map: $(OBJS) $(USER_OBJS) /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/L7_sdcard/sdcard_L7/STM32F722ZETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "L7_sdcard.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced Embedded/Assignment/L7_sdcard/sdcard_L7/STM32F722ZETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="L7_sdcard.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -72,14 +76,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-MAX3012_F7.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "MAX3012_F7.list"
+L7_sdcard.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "L7_sdcard.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) MAX3012_F7.elf MAX3012_F7.list MAX3012_F7.map default.size.stdout
+	-$(RM) L7_sdcard.elf L7_sdcard.list L7_sdcard.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
