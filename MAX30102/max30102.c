@@ -252,7 +252,7 @@ void max30102_softReset(max30102_t *obj)
 	do
 	  {
 		  read_register(obj, MAX30102_MODECONFIG, &response);
-		  HAL_Delay(1);
+		  //HAL_Delay(1);
 	  }while((response & MAX30102_RESET) != 0);
 
 }

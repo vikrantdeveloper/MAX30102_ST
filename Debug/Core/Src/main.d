@@ -25,13 +25,16 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h \
+ ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h \
  ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h \
- ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pcd.h \
- ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_usb.h \
- ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pcd_ex.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/App/fatfs.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/integer.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/Target/ffconf.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
@@ -49,6 +52,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/diskio.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff.h \
+ /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/Target/user_diskio.h \
  /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Log/erlog.h \
  /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/MAX30102/max30102.h \
  /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/MAX30102/filters.h \
@@ -81,13 +88,16 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_i2c_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pwr_ex.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi.h:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_spi_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_tim_ex.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h:
 ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h:
-../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pcd.h:
-../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_ll_usb.h:
-../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_pcd_ex.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/App/fatfs.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/integer.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/Target/ffconf.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
@@ -105,6 +115,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff_gen_drv.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/diskio.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Middlewares/Third_Party/FatFs/src/ff.h:
+/Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/FATFS/Target/user_diskio.h:
 /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/Log/erlog.h:
 /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/MAX30102/max30102.h:
 /Users/vikrantthakur/Documents/IITD/course_work/Semester-4/Courses/Advanced\ Embedded/Assignment/freertos_L7/MAX30102/filters.h:

@@ -18,14 +18,17 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "fatfs.h"
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <stdbool.h>
 #include "erlog.h"
 #include "max30102.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdarg.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,27 +59,43 @@ osSemaphoreId loggerHandle;
 
 log_t log_console;     /*log the data onto window console*/
 max30102_t max30102;   /*MAX30102 object*/
+SPI_HandleTypeDef hspi1;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_SPI1_Init(void);
 void log_data(void const * argument);
+void sd_open();
 void max30102_acqure(void const * argument);
 
 /* USER CODE BEGIN PFP */
 float temp , spo2 = 0;
 float beatsPerMinute = 0;
 float beatAvg = 0;
-bool readtemperature = false;
+volatile bool readtemperature = false;
+
+SemaphoreHandle_t binarySemaphore;
+SemaphoreHandle_t flagSemaphore;
+
+UINT bytesWrote;
+// Variables for FatFs
+FATFS FatFs;    // FatFs handle
+FIL fil;        // File handle
+FRESULT fres;   // Result after operations
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (GPIO_Pin == GPIO_PIN_0)
     {
     	readtemperature = true;
+    	//xSemaphoreGiveFromISR(flagSemaphore, &xHigherPriorityTaskWoken);
+    	portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
 
     }
 }
@@ -85,6 +104,92 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
+void myprintf(const char *fmt, ...) {
+  static char buffer[256];
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(buffer, sizeof(buffer), fmt, args);
+  va_end(args);
+
+  int len = strlen(buffer);
+  HAL_UART_Transmit(&huart3, (uint8_t*)buffer, len, -1);
+
+}
+void sd_init()
+{
+
+	 myprintf("\r\n~ SD card started ~\r\n\r\n");
+    //os_delay(1000);
+	    // Mount the file system
+	    fres = f_mount(&FatFs, "/", 1); // 1 = mount immediately
+	    if (fres != FR_OK) {
+	        myprintf("f_mount error (%i)\r\n", fres);
+	        return; // Infinite loop on failure
+	    } else {
+	        myprintf("f_mount success (%i)\r\n", fres);
+	    }
+
+	    // Variables for free space calculation
+	    DWORD free_clusters, free_sectors, total_sectors;
+	    FATFS* getFreeFs;
+
+	    // Get free space
+	    fres = f_getfree("", &free_clusters, &getFreeFs);
+	    if (fres != FR_OK) {
+	        myprintf("f_getfree error (%i)\r\n", fres);
+	        while (1); // Infinite loop on failure
+	    }
+
+	    // Calculate total and free space (formula from ChaN's documentation)
+	    total_sectors = (getFreeFs->n_fatent - 2) * getFreeFs->csize;
+	    free_sectors = free_clusters * getFreeFs->csize;
+
+	    myprintf("SD card stats:\r\n");
+	    myprintf("%10lu KiB total drive space.\r\n", total_sectors / 2);
+	    myprintf("%10lu KiB available.\r\n", free_sectors / 2);
+
+	    // Open file for writing
+	    sd_open();
+
+
+
+}
+void sd_write()
+{
+	fres = f_open(&fil, "write_os.txt", FA_WRITE | FA_OPEN_APPEND);
+	if (fres == FR_OK)
+			    {
+			        myprintf("Opened 'write.txt' for writing successfully.\r\n");
+			    } else
+			    {
+			        myprintf("f_open error (%i)\r\n", fres);
+			        while (1); // Infinite loop on failure
+			    }
+			 fres = f_write(&fil, log_console.msg, log_console.msg_len, &bytesWrote);
+			 if (fres == FR_OK)
+			 		    {
+			 		        myprintf("Opened 'write.txt' for writing successfully.\r\n");
+			 		    } else
+			 		    {
+			 		        myprintf("f_open error (%i)\r\n", fres);
+			 		        while (1); // Infinite loop on failure
+			 		    }
+	f_close(&fil);
+}
+void sd_open()
+{
+	fres = f_open(&fil, "write.txt", FA_WRITE | FA_OPEN_ALWAYS | FA_CREATE_ALWAYS);
+		    if (fres == FR_OK)
+		    {
+		        myprintf("Opened 'write.txt' for writing successfully.\r\n");
+		    } else
+		    {
+		        myprintf("f_open error (%i)\r\n", fres);
+		        while (1); // Infinite loop on failure
+		    }
+	f_close(&fil);
+}
 /* USER CODE END 0 */
 
 /**
@@ -116,7 +221,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
    MX_GPIO_Init();
+   MX_SPI1_Init();
+    MX_FATFS_Init();
+    sd_init();
   /* USER CODE BEGIN 2 */
+   binarySemaphore = xSemaphoreCreateBinary();
+   flagSemaphore = xSemaphoreCreateBinary();
    erlog_init(&log_console, &huart3);
    max30102_init(&max30102 , &hi2c2);
 
@@ -146,7 +256,7 @@ int main(void)
    max30102_set_pulseamplitude(&max30102, 0x00, GREEN_COLOUR);
    EXTI_Init(&max30102);
    max30102_enableDIETEMPRDY(&max30102);
-   HAL_Delay(1);
+
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -264,13 +374,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -288,6 +401,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : SPI_CS_Pin */
+  GPIO_InitStruct.Pin = SPI_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SPI_CS_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pin : USB_PowerSwitchOn_Pin */
   GPIO_InitStruct.Pin = USB_PowerSwitchOn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -301,13 +421,62 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USB_OverCurrent_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : USB_SOF_Pin USB_ID_Pin USB_DM_Pin USB_DP_Pin */
+  GPIO_InitStruct.Pin = USB_SOF_Pin|USB_ID_Pin|USB_DM_Pin|USB_DP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : USB_VBUS_Pin */
+  GPIO_InitStruct.Pin = USB_VBUS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USB_VBUS_GPIO_Port, &GPIO_InitStruct);
+
   GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;  // Interrupt on falling edge
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;  // Interrupt on falling edge
+   GPIO_InitStruct.Pull = GPIO_PULLUP;
+   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
+}
+
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 7;
+  hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
 }
 
 /* USER CODE BEGIN Header_log_data */
@@ -325,12 +494,16 @@ void log_data(void const * argument)
   for(;;)
   {
 
-	  if(log_console.msg_len != 0)
+	  if (xSemaphoreTake(binarySemaphore, portMAX_DELAY) == pdTRUE)
 	  {
-		  erlog_write(&log_console);
-	  	  erlog_clear(&log_console);
+		  if(log_console.msg_len != 0)
+		  {
+			  sd_write();
+			  erlog_write(&log_console);
+			  erlog_clear(&log_console);
+		  }
 	  }
-	  osDelay(500);
+	  //osDelay(500);
 
   }
   /* USER CODE END 5 */
@@ -373,10 +546,11 @@ void max30102_acqure(void const * argument)
 	  		 LowPassFilter_reset(&low_pass_filter);
 	  		 beatsPerMinute = 0;
 	  		 beatAvg = 0;
-	  		 strcpy(log_console.msg , "..No finger detected..\r\n");
-	  		 log_console.msg_len = strlen(log_console.msg);
+	  		 //strcpy(log_console.msg , "..No finger detected..\r\n");
+	  		 //log_console.msg_len = strlen(log_console.msg);
 	  }
 	 osDelay(1000);
+	 xSemaphoreGive(binarySemaphore);
   }
   /* USER CODE END max30102_acqure */
 }
